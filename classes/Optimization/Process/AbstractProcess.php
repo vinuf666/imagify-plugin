@@ -303,8 +303,12 @@ abstract class AbstractProcess implements ProcessInterface {
 
 		$args['hook_suffix'] = 'optimize_media';
 
+               
 		// Optimize.
-		return $this->optimize_sizes( array_keys( $sizes ), $optimization_level, $args );
+
+		$retval = $this->optimize_sizes( array_keys( $sizes ), $optimization_level, $args );
+
+                return $retval;
 	}
 
 	/**
@@ -402,7 +406,7 @@ abstract class AbstractProcess implements ProcessInterface {
 					if ( empty( $files[ $size_name ] ) ) {
 						continue;
 					}
-					if ( 'image/webp' === $files[ $size_name ]['mime-type'] ) {
+					if ( 'image/webp' === $files[ $size_name ]['mime-type']) {
 						continue;
 					}
 					if ( in_array( $size_name . static::WEBP_SUFFIX, $sizes, true ) ) {
@@ -471,7 +475,7 @@ abstract class AbstractProcess implements ProcessInterface {
 			'process_class'      => get_class( $this ),
 			'data'               => $args,
 		] )->save();
-
+                
 		return true;
 	}
 
@@ -635,6 +639,7 @@ abstract class AbstractProcess implements ProcessInterface {
 		 * @param bool             $webp               The image will be converted to webp.
 		 * @param bool             $is_disabled        Tell if this size is disabled from optimization.
 		 */
+
 		$response = apply_filters( 'imagify_before_optimize_size', null, $this, $file, $thumb_size, $optimization_level, $webp, $is_disabled );
 
 		if ( ! is_wp_error( $response ) ) {
@@ -676,7 +681,16 @@ abstract class AbstractProcess implements ProcessInterface {
 				$response = $this->maybe_resize( $thumb_size, $file );
 
 				if ( ! is_wp_error( $response ) ) {
-					// Resizing succeeded: optimize the file.
+                                    /**
+                                     * If the image processed is gif disable creation of its webp version if the option is selected in admin panel
+                                     * @author Vinu Felix
+                                     */
+                                    if($file->get_mime_type()=='image/gif' && $this->get_option( 'excludegif_webp' )) {
+                                        //The image is gif and in admin options skip creation of webp for gif is checked
+                                        $webp = false;
+                                        //return new \WP_Error( 'no_webp_for_gif', __( 'Webp version of gif is disabled by filter.' ) );
+                                    };
+                                    // Resizing succeeded: optimize the file.
 					$response = $file->optimize( [
 						'backup'             => ! $response['backuped'] && $this->can_backup( $size ),
 						'backup_path'        => $media->get_raw_backup_path(),
@@ -701,7 +715,6 @@ abstract class AbstractProcess implements ProcessInterface {
 		}
 
 		$data = $this->update_size_optimization_data( $response, $size, $optimization_level );
-
 		/**
 		 * Fires after optimizing a file.
 		 *
@@ -1438,7 +1451,7 @@ abstract class AbstractProcess implements ProcessInterface {
 		];
 
 		foreach ( $files as $size_name => $file ) {
-			if ( 'image/webp' !== $files[ $size_name ]['mime-type'] ) {
+			if ( 'image/webp' !== $files[ $size_name ]['mime-type'] || 'image/gif' !== $files[ $size_name ]['mime-type']) {
 				array_unshift( $sizes, $size_name . static::WEBP_SUFFIX );
 			}
 		}
