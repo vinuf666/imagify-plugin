@@ -42,6 +42,7 @@ class Imagify_Options extends Imagify_Abstract_Options {
 		'resize_larger'       => 0,
 		'resize_larger_w'     => 0,
 		'convert_to_webp'     => 0,
+                'excludegif_webp'     => 0,
 		'display_webp'        => 0,
 		'display_webp_method' => 'picture',
 		'cdn_url'             => '',
@@ -64,6 +65,7 @@ class Imagify_Options extends Imagify_Abstract_Options {
 		'auto_optimize'      => 1,
 		'backup'             => 1,
 		'convert_to_webp'    => 1,
+                'excludegif_webp'     => 1,
 		'admin_bar_menu'     => 1,
 		'partner_links'      => 1,
 	);
@@ -170,6 +172,7 @@ class Imagify_Options extends Imagify_Abstract_Options {
 			case 'backup':
 			case 'resize_larger':
 			case 'convert_to_webp':
+                        case 'excludegif_webp':
 			case 'display_webp':
 			case 'exif':
 			case 'admin_bar_menu':

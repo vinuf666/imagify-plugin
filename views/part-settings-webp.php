@@ -16,7 +16,14 @@ $settings = Imagify_Settings::get_instance();
 			],
 		] );
 		?>
-
+                <div class="imagify-options-line">
+			<?php
+			$settings->field_checkbox( [
+				'option_name' => 'excludegif_webp',
+				'label'       => __( 'Exclude Gif images from webp conversion', 'imagify' ),
+			] );
+			?>
+                </div>
 		<div class="imagify-options-line">
 			<?php
 			$settings->field_checkbox( [
